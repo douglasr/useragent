@@ -3,6 +3,14 @@ class UserAgent
     module All
       include Comparable
 
+      CRAWLER_USER_AGENTS = [
+        'AdsBot-Google', 'Baiduspider', 'Bloglines', 'Charlotte', 'DotBot', 'eCairn Grabber', 'FeedFetcher-Google',
+        'Googlebot', 'Java VM', 'LinkWalker', 'LiteFinder', 'Mediapartners-Google', 'msnbot', 'msnbot-media',
+        'QihooBot', 'Sogou head spider', 'Sogou web spider', 'Sosoimagespider', 'Sosospider', 'Speedy Spider',
+        'Superdownloads Spiderman', 'WebAlta Crawler', 'Yahoo! Slurp', 'Yeti', 'YodaoBot', 'YoudaoBot'
+      ].freeze
+
+
       def <=>(other)
         if respond_to?(:browser) && other.respond_to?(:browser) &&
             browser == other.browser
@@ -54,6 +62,16 @@ class UserAgent
         elsif detect_product('Mobile')
           true
         elsif application.comment.detect { |k, v| k =~ /^IEMobile/ }
+          true
+        else
+          false
+        end
+      end
+
+      def crawler?
+        comments = application.comment
+        comments = comments.join('; ') if (comments.respond_to?(:join))
+        if (CRAWLER_USER_AGENTS.detect { |a| comments.index(a) })
           true
         else
           false
