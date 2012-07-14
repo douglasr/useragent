@@ -21,7 +21,9 @@ class UserAgent
       end
 
       def platform
-        application.comment[0]
+        if comment = application.comment
+          comment[0] == 'compatible' ? nil : comment[0]
+        end
       end
 
       def security
@@ -29,12 +31,16 @@ class UserAgent
       end
 
       def os
-        i = application.comment[1] == 'U' ? 2 : 1
-        OperatingSystems.normalize_os(application.comment[i])
+        if comment = application.comment
+          i = comment[1] == 'U' ? 2 : 1
+          OperatingSystems.normalize_os(comment[i])
+        end
       end
 
       def localization
-        application.comment[3]
+        if comment = application.comment
+          comment[3]
+        end
       end
     end
   end

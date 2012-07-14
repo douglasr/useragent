@@ -44,6 +44,14 @@ class UserAgent
         application.version
       end
 
+      def platform
+        nil
+      end
+
+      def os
+        nil
+      end
+
       def respond_to?(symbol)
         detect_product(symbol) ? true : super
       end
@@ -59,20 +67,33 @@ class UserAgent
       def mobile?
         if browser == 'webOS'
           true
+        elsif platform == 'Symbian'
+          true
         elsif detect_product('Mobile')
           true
-        elsif application.comment.detect { |k, v| k =~ /^IEMobile/ }
+        elsif application.comment &&
+            application.comment.detect { |k, v| k =~ /^IEMobile/ }
           true
         else
           false
         end
       end
 
-      def crawler?
-        comments = application.comment
-        comments = comments.join('; ') if (comments.respond_to?(:join))
-        if (CRAWLER_USER_AGENTS.detect { |a| comments.index(a) })
-          true
+      def bot?
+        # Match common case when bots refer to themselves as bots in
+        # the application comment. There are no standards for how bots
+        # should call themselves so its not an exhaustive method.
+        #
+        # If you want to expand the scope, override the method and
+        # provide your own regexp. Any patches to future extend this
+        # list will be rejected.
+        if comment = application.comment
+          comments = comment.join('; ') if (comment.respond_to?(:join))
+          if (CRAWLER_USER_AGENTS.detect { |a| comments.index(a) })
+            true
+          else
+            comment.any? { |c| c =~ /bot/i }
+          end
         else
           false
         end

@@ -5,7 +5,7 @@ describe UserAgent do
     lambda { UserAgent.new(nil) }.should raise_error(ArgumentError, "expected a value for product")
   end
 
-  it "should split comment to any array if a string is passed in" do
+  it "should split comment to an array if a string is passed in" do
     useragent = UserAgent.new("Mozilla", "5.0", "Macintosh; U; Intel Mac OS X 10_5_3; en-us")
     useragent.comment.should == ["Macintosh", "U", "Intel Mac OS X 10_5_3", "en-us"]
   end
@@ -163,14 +163,6 @@ describe UserAgent, ".parse" do
   it "should concatenate user agents when coerced to a string" do
     string = UserAgent.parse("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_3; en-us) AppleWebKit/525.18 (KHTML, like Gecko) Version/3.1.1 Safari/525.18")
     string.to_str.should == "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_5_3; en-us) AppleWebKit/525.18 (KHTML, like Gecko) Version/3.1.1 Safari/525.18"
-  end
-
-  it "should parse an empty string" do
-    UserAgent.parse("").should be_empty
-  end
-
-  it "should parse nil" do
-    UserAgent.parse(nil).should be_empty
   end
 
   it "should parse a single product" do
@@ -372,6 +364,10 @@ describe UserAgent::Version do
     UserAgent::Version.new("9.0").should < UserAgent::Version.new("10.0")
   end
 
+  it "should be < if version is less" do
+    UserAgent::Version.new("4").should < UserAgent::Version.new("4.1")
+  end
+
   it "should be < if version is less and a string" do
     UserAgent::Version.new("9.0").should < "10.0"
   end
@@ -394,6 +390,10 @@ describe UserAgent::Version do
 
   it "should be > if version is greater" do
     UserAgent::Version.new("1.0").should > UserAgent::Version.new("0.9")
+  end
+
+  it "should be > if version is greater" do
+    UserAgent::Version.new("4.1").should > UserAgent::Version.new("4")
   end
 
   it "should not be > if version is less" do
